@@ -16,11 +16,11 @@ end
 
 target 'chattingApp' do
   config = use_native_modules!
-
   use_react_native!(
     :path => config[:reactNativePath],
     # An absolute path to your application root.
     :app_path => "#{Pod::Config.instance.installation_root}/.."
+    :flipper_configuration => FlipperConfiguration.disabled # Move this line here - Added it on 06-08-2025
   )
 
   post_install do |installer|

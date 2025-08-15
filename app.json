@@ -1,4 +1,7 @@
 {
   "name": "chattingApp",
-  "displayName": "chattingApp"
+  "displayName": "chattingApp",
+   "react-native-google-mobile-ads": {
+    "android_app_id": "ca-app-pub-3840448955183784~3058700149"
+  }
 }
