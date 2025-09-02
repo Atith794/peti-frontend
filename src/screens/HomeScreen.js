@@ -50,9 +50,10 @@ const PostCard = ({ item, currentUserId, toggleLike, navigation, isVisible, isTa
       </View>
 
       <View style={styles.mediaContainer}>
-        {item?.mediaUrl?.endsWith('.mp4') || item?.mediaUrl?.endsWith('.mov') ? (
+        {item?.mediaType === 'video' ? (
+          console.log("Video post:",item.mediaUrl),
           isVisible && <Video
-            source={{ uri: `${BASE_URL}/${item.mediaUrl}` }}
+            source={{ uri:  item.mediaUrl?.startsWith('http')? item.mediaUrl:`${BASE_URL}/${item.mediaUrl}` }}
             style={styles.postImage}
             controls
             resizeMode="cover"
@@ -61,12 +62,15 @@ const PostCard = ({ item, currentUserId, toggleLike, navigation, isVisible, isTa
           />
         ) : (
           <>
-            <Image source={{ uri: `${BASE_URL}/${item.mediaUrl}` }} style={styles.postImage} />
+            <Image source={{ uri: item.mediaUrl?.startsWith('http')
+              ? item.mediaUrl
+              : `${BASE_URL}/${item.mediaUrl}` }} style={styles.postImage} />
             {/* {item.audioUrl && (
               <AudioPlayer audioUrl={`${BASE_URL}/${item.audioUrl}`} />
             )} */}
             {item.audioUrl && isActive && isVisible && (
-            <AudioPlayer audioUrl={`${BASE_URL}/${item.audioUrl}`} />
+            <AudioPlayer audioUrl={item.audioUrl?.startsWith('http')
+              ? item.audioUrl :`${BASE_URL}/${item.audioUrl}`} />
             )}
           </>
         )}
@@ -154,9 +158,6 @@ const HomeScreen = ({ navigation }) => {
     }
   };
 
-  // useEffect(() => {
-  //   setMixedData(withAdPlaceholders(posts));
-  // }, [posts]);
 
   const toggleLike = async (postId) => {
     const token = await AsyncStorage.getItem('token');
@@ -175,75 +176,6 @@ const HomeScreen = ({ navigation }) => {
     fetchFeed();
   }, []);
 
-  //Working code
-  // const renderPost = ({ item }) => (
-  //   <View style={styles.card}>
-  //       {console.log("item in homescreen:",item)}
-  //     <View style={styles.header}>
-  //       <Image source={{ uri: `${BASE_URL}/uploads/${item?.user?.profilePicture}` }} style={styles.avatar} />
-  //       <Text style={styles.username}>{item?.user?.username}</Text>
-  //     </View>
-  //     <Image source={{ uri: `${BASE_URL}/${item?.mediaUrl}` }} style={styles.media} />
-  //     <Text style={styles.caption}>{item?.caption}</Text>
-  //     <Text style={styles.location}>{item?.location}</Text>
-  //     <TouchableOpacity onPress={() => toggleLike(item._id)}>
-  //       <Icon
-  //       name={item.likes.includes(currentUserId) ? 'heart' : 'heart-outline'}
-  //       size={24}
-  //       color={item.likes.includes(currentUserId) ? 'red' : 'black'}
-  //       />
-  //       </TouchableOpacity>
-  //       <Text style={styles.countText}>{item.likes.length} Likes</Text>
-
-  //       {/* <TouchableOpacity onPress={() => openCommentInput(item._id)}>
-  //           <Icon name="chatbubble-outline" size={24} style={{ marginLeft: 20 }} />
-  //       </TouchableOpacity>
-  //       <Text style={styles.countText}>{item.comments.length} Comments</Text> */}
-  //       <TouchableOpacity onPress={() => navigation.navigate('Comments', { postId: item._id })}>
-  //           <Icon name="chatbubble-outline" size={24} style={{ marginLeft: 20 }} />
-  //       </TouchableOpacity>
-  //       <Text style={styles.countText}>{item.comments.length} Comments</Text>
-  //   </View>
-  // );
-
-  //100% working code
-  // const renderPost = ({ item }) => (
-    
-  //   <View style={styles.postCard}>
-  //     <View style={styles.postHeader}>
-  //       <Image source={{ uri: `${BASE_URL}/uploads/${item?.user?.profilePicture}` }} style={styles.avatar} />
-  //       <View>
-  //         <Text style={styles.username}>{item?.user?.username}</Text>
-  //         {/* <Text style={styles.timestamp}>2h</Text> Replace with real time diff if available */}
-  //       </View>
-  //     </View>
-
-  //     <Image source={{ uri: `${BASE_URL}/${item?.mediaUrl}` }} style={styles.postImage} />
-
-  //     <View style={styles.actionBar}>
-  //       <TouchableOpacity style={styles.actionButton} onPress={() => toggleLike(item._id)}>
-  //         {/* <Icon name={item.likes.includes(currentUserId) ? 'heart' : 'heart-outline'} size={22} color={item.likes.includes(currentUserId) ? '#FF6B35' : '#64748B'} /> */}
-  //         <Bone
-  //           size={22}
-  //           color={item.likes.includes(currentUserId) ? '#FF6B35' : '#64748B'}
-  //           fill={item.likes.includes(currentUserId) ? '#FF6B35' : 'none'}
-  //           strokeWidth={2}
-  //         />
-  //         <Text style={styles.actionText}>{item.likes.length}</Text>
-  //       </TouchableOpacity>
-
-  //       <TouchableOpacity style={styles.actionButton} onPress={() => navigation.navigate('Comments', { postId: item._id })}>
-  //         <Icon name="chatbubble-outline" size={22} color="#64748B" />
-  //         <Text style={styles.actionText}>{item.comments.length}</Text>
-  //       </TouchableOpacity>
-
-  //       {/* <TouchableOpacity style={styles.actionButton}> */}
-  //         {/* <Icon name="paper-plane-outline" size={22} color="#64748B" /> */}
-  //         {/* <Text style={styles.actionText}>67</Text> placeholder */}
-  //       {/* </TouchableOpacity> */}
-  //     </View>
-  //   </View>
-  // );
 
   const renderPost = ({ item,index }) => {
     // if (index === AD_FREQUENCY) return <PawBreakAd />;
@@ -262,28 +194,11 @@ const HomeScreen = ({ navigation }) => {
       </>
   )};
 
-  // const renderMixedItem = ({ item }) => {
-  //   const data = item;
-  //   console.log("Data for ad posts:",data);
-  //   return (
-  //     <PostCard
-  //       item={data}
-  //       currentUserId={currentUserId}
-  //       toggleLike={toggleLike}
-  //       navigation={navigation}
-  //       isVisible={data._id === visiblePostId}
-  //       isTabFocused={isTabFocused}
-  //     />
-  //   );
-  // }
-
-  // const keyExtractor = (item) => item.key;
 
   if (loading) return <ActivityIndicator size="large" style={{ flex: 1 }} />;
 
   return (
     <View style={[styles.card, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
-        {/* <Text style={styles.actionText}>Peti</Text> */}
         <AppLayout>
           {console.log("Posts:",posts)}
           <FlatList
@@ -297,14 +212,6 @@ const HomeScreen = ({ navigation }) => {
             onViewableItemsChanged={onViewableItemsChanged}
             viewabilityConfig={viewabilityConfig}
           />
-          {/* <FlatList
-            data={mixedData}
-            renderItem={renderMixedItem}
-            keyExtractor={(item) => item?._id}
-            contentContainerStyle={{ padding: 10, paddingBottom: '15%' }}
-            onViewableItemsChanged={onViewableItemsChanged}
-            viewabilityConfig={viewabilityConfig}
-          /> */}
         </AppLayout>
     </View>
   );
@@ -313,23 +220,11 @@ const HomeScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   card: {
     flex: 1,
-    // backgroundColor: '#F8FAFC',
     backgroundColor: '#eddfdfff',
   },
   postCard: {
-    // backgroundColor: '#FFFFFF',
     backgroundColor: '#F8FAFC',
-    // borderRadius: 16,
-    // marginHorizontal: 16,
-    // marginBottom: 20,
     overflow: 'hidden',
-    // width: '100%',
-    // borderColor: '#E2E8F0'
-    // shadowColor: '#000',
-    // shadowOffset: { width: 0, height: 2 },
-    // shadowOpacity: 0.08,
-    // shadowRadius: 6,
-    // elevation: 3,
   },
   postHeader: {
     flexDirection: 'row',
